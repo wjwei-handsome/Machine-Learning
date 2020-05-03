@@ -37,7 +37,7 @@ X_new = [[22587]]
 print(model.predict(X_new))
 
 print(model.intercept_)
-print(mode.coef_)
+print(model.coef_)
 
 model2=sklearn.neighbors.KNeighborsRegressor(n_neighbors=3)
 model2.fit(X,y)
