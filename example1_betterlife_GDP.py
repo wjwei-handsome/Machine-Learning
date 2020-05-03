@@ -43,3 +43,5 @@ model2=sklearn.neighbors.KNeighborsRegressor(n_neighbors=3)
 model2.fit(X,y)
 
 print(model2.predict(X_new))
+
+print('gitgitgitgit')
