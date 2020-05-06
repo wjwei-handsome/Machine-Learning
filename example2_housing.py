@@ -84,3 +84,4 @@ housing_text=housing['ocean_proximity']
 housing_text_encoded=encoder.fit_transform(housing_text)
 housing_text_encoded
 encoder.classes_
+print('test')
