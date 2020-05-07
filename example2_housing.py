@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import numpy as np 
+import numpy as np
 ##加载数据
 housing=pd.read_csv('datasets/housing/housing.csv')
 housing.info()
@@ -78,9 +78,57 @@ X=imputer.transform(housing_num)
 housing_tr=pd.DataFrame(X,columns=housing_num.columns)
 housing_tr.info()
 #处理文本和分类属性
+#这种方法会让两个相近的数字比两个相远的更加相似 但是事实情况并非如此
 from sklearn.preprocessing import LabelEncoder
 encoder=LabelEncoder()
 housing_text=housing['ocean_proximity']
 housing_text_encoded=encoder.fit_transform(housing_text)
 housing_text_encoded
 encoder.classes_
+#这里采用独热码的方式 就不会出现上一步的问题了
+from sklearn.preprocessing import OneHotEncoder
+encoder=OneHotEncoder()
+housing_text_1hot=encoder.fit_transform(housing_text_encoded.reshape(-1,1)) #返回scipy的稀疏矩阵
+housing_text_1hot.toarray()
+#这一布可以一步到位 完成两个转换 从文本类别到整数类别 再从整数转换到独热向量
+from sklearn.preprocessing import LabelBinarizer
+encoder=LabelBinarizer()
+housing_text_1hot=encoder.fit_transform(housing_text)
+housing_text_1hot #这里返回的是密集Numpy矩阵
+
+##流水线和转换器
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import FunctionTransformer
+
+rooms_ix, bedrooms_ix, population_ix, household_ix = [list(housing.columns).index(col)  for col in ("total_rooms", "total_bedrooms", "population", "households")]
+
+def add_extra_features(X, add_bedrooms_per_room=True):
+    rooms_per_household = X[:, rooms_ix] / X[:, household_ix]
+    population_per_household = X[:, population_ix] / X[:, household_ix]
+    if add_bedrooms_per_room:
+        bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+        return np.c_[X, rooms_per_household, population_per_household,
+                     bedrooms_per_room]
+    else:
+        return np.c_[X, rooms_per_household, population_per_household]
+
+attr_adder = FunctionTransformer(add_extra_features, validate=False, kw_args={"add_bedrooms_per_room": False})
+housing_extra_attribs = attr_adder.fit_transform(housing.values)
+housing_extra_attribs = pd.DataFrame(housing_extra_attribs,columns=list(housing.columns)+["rooms_per_household", "population_per_household"],index=housing.index)
+housing_extra_attribs.head()
+
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+from sklearn.compose import ColumnTransformer
+num_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy="median")),
+        ('attribs_adder', FunctionTransformer(add_extra_features, validate=False)),
+        ('std_scaler', StandardScaler()),
+    ])
+full_pipeline = ColumnTransformer([
+        ("num", num_pipeline, num_attribs),
+        ("cat", OneHotEncoder(), cat_attribs),
+    ])
+housing_prepared = full_pipeline.fit_transform(housing)
+housing_prepared.shape
