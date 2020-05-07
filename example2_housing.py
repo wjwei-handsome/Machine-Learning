@@ -133,3 +133,4 @@ full_pipeline = ColumnTransformer([
     ])
 housing_prepared = full_pipeline.fit_transform(housing)
 housing_prepared.shape
+
