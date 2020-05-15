@@ -85,7 +85,6 @@ housing_text=housing['ocean_proximity']
 housing_text_encoded=encoder.fit_transform(housing_text)
 housing_text_encoded
 encoder.classes_
-<<<<<<< HEAD
 #这里采用独热码的方式 就不会出现上一步的问题了
 from sklearn.preprocessing import OneHotEncoder
 encoder=OneHotEncoder()

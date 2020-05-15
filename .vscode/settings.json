@@ -1,3 +1,4 @@
 {
-    "python.dataScience.jupyterServerURI": "https://47.115.36.127:8888/"
+    "python.dataScience.jupyterServerURI": "https://47.115.36.127:8888/",
+    "python.pythonPath": "/root/anaconda3/bin/python"
 }
