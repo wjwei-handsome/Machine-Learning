@@ -158,3 +158,15 @@ housing_predictions = tree_reg.predict(housing_prepared)
 tree_mse = mean_squared_error(housing_labels, housing_predictions)
 tree_rmse = np.sqrt(tree_mse)
 tree_rmse
+ #进行交叉验证CV 对模型进行训练和评估
+ from sklearn.model_selection import cross_val_score
+scores = cross_val_score(tree_reg, housing_prepared, housing_labels,
+                         scoring="neg_mean_squared_error", cv=10)
+
+def display_scores(scores):
+    print('Scores:',scores)
+    print('Mean:',scores.mean())
+    print("Standard deviation",scores.std())
+
+tree_rmse_scores=np.sqrt(-scores)
+display_scores(tree_rmse_scores)
