@@ -18,3 +18,8 @@ import matplotlib.pyplot as plt
 plt.scatter(wwj_X,wwj_y)
 plt.savefig('wwj_X_y.png')
 '''
+#展示参数、截距、参数
+print(model.coef_)
+print(model.intercept_)
+print(model.get_params)
+print(model.score(data_X,data_y)) #R^2 coefficient of determation
